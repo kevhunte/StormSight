@@ -3,6 +3,7 @@
   <!--<img alt="Vue logo" src="./assets/logo.png">-->
   <h5>StormSight</h5>
   <!--<HelloWorld msg="Welcome to Your Vue.js App"/>-->
+  <div id="mapid"></div>
 </div>
 </template>
 
@@ -13,11 +14,44 @@ export default {
   name: 'App',
   components: {
     //HelloWorld
+  },
+  data() {
+    return {
+      mymap: null,
+      icons: []
+    }
+  },
+  mounted() {
+    this.initMap();
+    this.addMarker(40.8116, -73.9465); // icon free
+
+  },
+  methods: {
+    initMap() {
+      this.mymap = L.map('mapid').setView([40.8116, -73.9465], 13); // Harlem
+
+      const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap<a/>';
+      const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      const tiles = L.tileLayer(tileUrl, {
+        attribution
+      });
+      tiles.addTo(this.mymap);
+    },
+    addMarker(lat, lng, StormIcon) {
+      if (StormIcon) {
+        var marker = L.marker([lat, lng], {
+          icon: StormIcon
+        }).addTo(this.mymap);
+      } else {
+        var marker = L.marker([lat, lng]).addTo(this.mymap);
+      }
+      return marker;
+    }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -25,5 +59,9 @@ export default {
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+}
+
+#mapid {
+    height: 500px;
 }
 </style>
