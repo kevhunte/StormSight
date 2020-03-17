@@ -3,7 +3,9 @@
   <!--<img alt="Vue logo" src="./assets/logo.png">-->
   <h5>StormSight</h5>
   <!--<HelloWorld msg="Welcome to Your Vue.js App"/>-->
-  <div id="mapid"></div>
+  <div id="MapContainer" class="col-md-10 mx-auto">
+    <div id="mapid"></div>
+  </div>
 </div>
 </template>
 
