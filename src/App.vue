@@ -21,7 +21,9 @@ export default {
     return {
       mymap: null,
       location: null,
-      icons: []
+      icons: [],
+      weatherURL: 'https://api.weather.gov/points/',
+      weatherData: null
     }
   },
   mounted() {
@@ -31,18 +33,16 @@ export default {
 
   },
   methods: {
-    initMap(lat, lng) {
-      if (lat && lng) {
-        this.mymap = L.map('mapid').setView([lat, long], 13);
-      } else {
-        this.mymap = L.map('mapid').setView([40.8116, -73.9465], 13); // Harlem
-      }
+    initMap() {
+
+      this.mymap = L.map('mapid').setView([40.8116, -73.9465], 13); // Harlem as default
       const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap<a/>';
       const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
       const tiles = L.tileLayer(tileUrl, {
         attribution
       });
       tiles.addTo(this.mymap);
+
     },
     addMarker(lat, lng, StormIcon) {
       if (StormIcon) {
@@ -61,9 +61,26 @@ export default {
         this.addMarker(pos.coords.latitude, pos.coords.longitude); // adds at user's location
         //console.log(this.mymap);
         this.mymap.panTo(new L.LatLng(pos.coords.latitude, pos.coords.longitude)); // relocates on map
+        this.getWeatherData(pos.coords.latitude, pos.coords.longitude);
       }, err => {
         console.log('error - ', err);
       });
+    },
+    async getWeatherData(lat, long) {
+      if (lat && long) {
+
+        let response = await fetch(this.weatherURL + lat + ',' + long);
+        let data = await response.json();
+        //console.log(data);
+
+        const forecastURL = data.properties.forecast; // pulls forecast url
+        let foreRes = await fetch(forecastURL);
+        let foreData = await foreRes.json();
+
+        const weatherData = foreData.properties.periods; // data for next week
+        this.weatherData = weatherData;
+        console.log(weatherData);
+      }
     }
   }
 }
@@ -80,6 +97,6 @@ export default {
 }
 
 #mapid {
-    height: 500px;
+    height: 30rem;
 }
 </style>
