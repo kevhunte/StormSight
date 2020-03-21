@@ -38,6 +38,36 @@ export default {
     //this.addMarker(40.8116, -73.9465); // icon free
 
   },
+  watch: {
+    'predictions': function(val) {
+      if (val) {
+        console.log(val); // weather data
+        let lat = this.location.latitude;
+        let long = this.location.longitude;
+        let offset = 0.01;
+        if (val.hasOwnProperty('Sunny')) {
+          if (val.Sunny.hasOwnProperty('guess')) {
+            this.addMarker(lat + offset, long, [this.icons[0], 'Sunny', val.Sunny.guess]);
+          }
+        }
+        if (val.hasOwnProperty('Rain')) {
+          if (val.Rain.hasOwnProperty('guess')) {
+            this.addMarker(lat, long + offset, [this.icons[1], 'Rain', val.Rain.guess]);
+          }
+        }
+        if (val.hasOwnProperty('Snow')) {
+          if (val.Snow.hasOwnProperty('guess')) {
+            this.addMarker(lat - offset, long, [this.icons[2], 'Snow', val.Snow.guess]);
+          }
+        }
+        if (val.hasOwnProperty('Cloudy')) {
+          if (val.Cloudy.hasOwnProperty('guess')) {
+            this.addMarker(lat, long - offset, [this.icons[3], 'Cloudy', val.Cloudy.guess]);
+          }
+        }
+      }
+    }
+  },
   methods: {
     initMap() {
 
@@ -52,9 +82,21 @@ export default {
     },
     addMarker(lat, lng, StormIcon) {
       if (StormIcon) {
+        // figure out best way to do this
+        /*
+        let icon = L.icon({
+          iconUrl: StormIcon[0],
+          iconSize: [38, 38] // figure out how to control opacity
+        });*/
+
+        let icon = L.divIcon({
+          html: '<img style="opacity:' + StormIcon[2] + '; width:2.2rem; height:2.2rem;" src="' + StormIcon[0] + '">',
+          className: null,
+          iconSize: [38, 38]
+        })
         var marker = L.marker([lat, lng], {
-          icon: StormIcon
-        }).addTo(this.mymap);
+          icon: icon
+        }).addTo(this.mymap).bindPopup(StormIcon[1]);
       } else {
         var marker = L.marker([lat, lng]).addTo(this.mymap);
       }
@@ -132,9 +174,8 @@ export default {
         for (let i in prediction) {
           this.makePrediction(prediction[i]);
         }
-        await console.log('with weights -', prediction);
+        //await console.log('with weights -', prediction);
         this.predictions = prediction; // trigger watcher to make storm icons for map
-
       }
     },
     makePrediction(cond) {
