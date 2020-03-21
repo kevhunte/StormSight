@@ -21,7 +21,12 @@ export default {
     return {
       mymap: null,
       location: null,
-      icons: [],
+      icons: [
+        require('@/assets/sunny.png'),
+        require('@/assets/rain.png'),
+        require('@/assets/snow.png'),
+        require('@/assets/cloudy.png')
+      ],
       weatherURL: 'https://api.weather.gov/points/',
       weatherData: null,
       predictions: null
