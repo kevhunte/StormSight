@@ -3,10 +3,13 @@
   <!--<img alt="Vue logo" src="./assets/logo.png">-->
   <h5>StormSight</h5>
   <!--<HelloWorld msg="Welcome to Your Vue.js App"/>-->
-  <div id="tempContainer" v-if="this.temp">
-    <h6>
+  <div id="tempContainer" class="col-md-10 mx-auto">
+    <h6 v-if="this.temp">
       {{this.temp}}&deg; F <br>
       {{this.shortDesc}}
+    </h6>
+    <h6 v-else>
+      This application needs GPS services to function correctly.
     </h6>
   </div>
   <div id="MapContainer" class="col-md-10 mx-auto">
