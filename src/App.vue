@@ -23,7 +23,8 @@ export default {
       location: null,
       icons: [],
       weatherURL: 'https://api.weather.gov/points/',
-      weatherData: null
+      weatherData: null,
+      predictions: null
     }
   },
   mounted() {
@@ -77,10 +78,62 @@ export default {
         let foreRes = await fetch(forecastURL);
         let foreData = await foreRes.json();
 
-        const weatherData = foreData.properties.periods; // data for next week
+        const weatherData = foreData.properties.periods; // data for the week
         this.weatherData = weatherData;
-        console.log(weatherData);
+        //console.log(weatherData);
+        this.processWeatherData();
       }
+    },
+    async processWeatherData() {
+      if (this.weatherData) { // processes weather conditions for the next 5 days
+        let prediction = {}
+        for (let [index, d] of this.weatherData.entries()) {
+          if (index > 10) { // save time
+            break;
+          }
+          let cond = d.shortForecast
+          if (cond.includes("Sunny")) {
+            prediction.hasOwnProperty('Sunny') ? prediction.Sunny.hits += 1 : prediction.Sunny = {
+              "hits": 1,
+              "firstSeen": index
+            }
+          }
+          if (cond.includes("Rain")) {
+            prediction.hasOwnProperty('Rain') ? prediction.Rain.hits += 1 : prediction.Rain = {
+              "hits": 1,
+              "firstSeen": index
+            }
+          }
+          if (cond.includes("Snow")) {
+            prediction.hasOwnProperty('Snow') ? prediction.Snow.hits += 1 : prediction.Snow = {
+              "hits": 1,
+              "firstSeen": index
+            }
+          }
+          if (cond.includes("Cloudy")) {
+            prediction.hasOwnProperty('Cloudy') ? prediction.Cloudy.hits += 1 : prediction.Cloudy = {
+              "hits": 1,
+              "firstSeen": index
+            }
+          }
+          if (cond.includes("Clear")) {
+            prediction.hasOwnProperty('Clear') ? prediction.Clear.hits += 1 : prediction.Clear = {
+              "hits": 1,
+              "firstSeen": index
+            }
+          }
+        }
+        console.log('processed - ', prediction);
+        /*for (let p of prediction){
+          makePrediction(p);
+        }
+        //await console.log('with weights -',prediction);
+        //this.predictions = prediction;
+        */
+      }
+    },
+    makePrediction(key) { // can work on each key of predictions seperately
+      // takes a key, and adds a prediction val
     }
   }
 }
