@@ -3,6 +3,12 @@
   <!--<img alt="Vue logo" src="./assets/logo.png">-->
   <h5>StormSight</h5>
   <!--<HelloWorld msg="Welcome to Your Vue.js App"/>-->
+  <div id="tempContainer" v-if="this.temp">
+    <h6>
+      {{this.temp}}&deg; F <br>
+      {{this.shortDesc}}
+    </h6>
+  </div>
   <div id="MapContainer" class="col-md-10 mx-auto">
     <div id="mapid"></div>
   </div>
@@ -29,7 +35,9 @@ export default {
       ],
       weatherURL: 'https://api.weather.gov/points/',
       weatherData: null,
-      predictions: null
+      predictions: null,
+      temp: null,
+      shortDesc: null
     }
   },
   mounted() {
@@ -41,7 +49,7 @@ export default {
   watch: {
     'predictions': function(val) {
       if (val) {
-        console.log(val); // weather data
+        //console.log(val); // weather data
         let lat = this.location.latitude;
         let long = this.location.longitude;
         let offset = 0.01;
@@ -128,6 +136,8 @@ export default {
         const weatherData = foreData.properties.periods; // data for the week
         this.weatherData = weatherData;
         //console.log(weatherData);
+        this.temp = weatherData[0].temperature;
+        this.shortDesc = weatherData[0].shortForecast;
         this.processWeatherData();
       }
     },
