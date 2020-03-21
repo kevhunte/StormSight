@@ -128,17 +128,19 @@ export default {
             }
           }
         }
-        console.log('processed - ', prediction);
-        /*for (let p of prediction){
-          makePrediction(p);
+        //console.log('processed - ', prediction);
+        for (let i in prediction) {
+          this.makePrediction(prediction[i]);
         }
-        //await console.log('with weights -',prediction);
-        //this.predictions = prediction;
-        */
+        await console.log('with weights -', prediction);
+        this.predictions = prediction; // trigger watcher to make storm icons for map
+
       }
     },
-    makePrediction(key) { // can work on each key of predictions seperately
-      // takes a key, and adds a prediction val
+    makePrediction(cond) {
+      if (cond.firstSeen < 4) { // only make prediction if condition going to occur within two days.
+        cond.guess = +((2 * cond.hits) / (10 + cond.firstSeen)).toPrecision(2);
+      }
     }
   }
 }
