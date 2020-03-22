@@ -2,12 +2,9 @@
 <div id="app">
   <h5>StormSight</h5>
   <div id="tempContainer" class="col-md-10 mx-auto">
-    <h6 v-if="this.statusCode === 200">
+    <h6 v-if="this.temp">
       {{this.temp}}&deg; F <br>
       {{this.shortDesc}}
-    </h6>
-    <h6 v-else-if="this.statusCode !== 200">
-      {{this.message}}
     </h6>
     <h6 v-else>
       {{this.message}}
@@ -138,7 +135,7 @@ export default {
         let foreData = await foreRes.json();
         //console.log(foreData);
         this.statusCode = foreData.status;
-        if (foreData.status === 200 || foreData.hasOwnProperty('properties')) {
+        if (foreData.hasOwnProperty('properties')) {
           const weatherData = foreData.properties.periods; // data for the week
           this.weatherData = weatherData;
           //console.log(weatherData);
