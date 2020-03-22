@@ -1,15 +1,16 @@
 <template>
 <div id="app">
-  <!--<img alt="Vue logo" src="./assets/logo.png">-->
   <h5>StormSight</h5>
-  <!--<HelloWorld msg="Welcome to Your Vue.js App"/>-->
   <div id="tempContainer" class="col-md-10 mx-auto">
-    <h6 v-if="this.temp">
+    <h6 v-if="this.statusCode === 200">
       {{this.temp}}&deg; F <br>
       {{this.shortDesc}}
     </h6>
+    <h6 v-else-if="this.statusCode !== 200">
+      {{this.message}}
+    </h6>
     <h6 v-else>
-      This application needs GPS services to function correctly.
+      {{this.message}}
     </h6>
   </div>
   <div id="MapContainer" class="col-md-10 mx-auto">
@@ -19,8 +20,6 @@
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
-
 export default {
   name: 'App',
   components: {
@@ -40,7 +39,9 @@ export default {
       weatherData: null,
       predictions: null,
       temp: null,
-      shortDesc: null
+      shortDesc: null,
+      message: "This application requires GPS services to function.",
+      statusCode: null
     }
   },
   mounted() {
@@ -135,13 +136,18 @@ export default {
         const forecastURL = data.properties.forecast; // pulls forecast url
         let foreRes = await fetch(forecastURL);
         let foreData = await foreRes.json();
-
-        const weatherData = foreData.properties.periods; // data for the week
-        this.weatherData = weatherData;
-        //console.log(weatherData);
-        this.temp = weatherData[0].temperature;
-        this.shortDesc = weatherData[0].shortForecast;
-        this.processWeatherData();
+        //console.log(foreData);
+        this.statusCode = foreData.status;
+        if (foreData.status === 200 || foreData.hasOwnProperty('properties')) {
+          const weatherData = foreData.properties.periods; // data for the week
+          this.weatherData = weatherData;
+          //console.log(weatherData);
+          this.temp = weatherData[0].temperature;
+          this.shortDesc = weatherData[0].shortForecast;
+          this.processWeatherData();
+        } else {
+          this.message = "No weather data was returned";
+        }
       }
     },
     async processWeatherData() {
